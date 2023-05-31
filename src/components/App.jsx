@@ -10,9 +10,21 @@ export class App extends React.Component {
     filter: '',
   };
 
+  componentDidMount() {
+    const savedContacts = JSON.parse(localStorage.getItem('contacts'));
+    if (savedContacts) {
+      this.setState({ contacts: [...savedContacts] });
+    }
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.contacts !== prevState.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
+
   onDelete = id => {
     this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== id)
+      contacts: prevState.contacts.filter(contact => contact.id !== id),
     }));
   };
 
@@ -23,14 +35,14 @@ export class App extends React.Component {
       number: `${number}`,
     };
     const isExist = this.state.contacts.find(contact => contact.name === name);
-    if(isExist) {
-      alert(`${name} is already in contacts`)
+    if (isExist) {
+      alert(`${name} is already in contacts`);
     } else {
       this.setState(prevState => ({
-        contacts: [person, ...prevState.contacts]
+        contacts: [person, ...prevState.contacts],
       }));
     }
-  }
+  };
 
   filteredNames = () => {
     // const contacts = [...this.state.contacts];
@@ -39,7 +51,7 @@ export class App extends React.Component {
       name.toLowerCase().includes(filter.toLowerCase())
     );
     return filtered;
-  }
+  };
 
   onFilter = e => {
     const nameIs = e.target.value;
@@ -53,7 +65,7 @@ export class App extends React.Component {
         <Form onSubmit={this.submitCathcer} />
         <p>Contacts</p>
         <Filter onFilter={this.onFilter} />
-        <ContactList contacts={this.filteredNames()} onDelete={this.onDelete}/>
+        <ContactList contacts={this.filteredNames()} onDelete={this.onDelete} />
       </>
     );
   }
